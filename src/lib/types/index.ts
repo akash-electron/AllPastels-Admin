@@ -33,3 +33,11 @@ export type {
   RecentOrderRow,
   SalesSeriesPoint,
 } from "./dashboard";
+
+export type {
+  Msg,
+  MessageStatus,
+  MessageSummary,
+  MessagesPage,
+  ContactMessage,
+} from "./contact";

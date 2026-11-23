@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   },
   products: "/api/products",
   orders: "/api/orders",
+  contact: "/api/contact",
   coupons: "/api/coupons",
   settings: {
     checkout: "/api/settings/checkout",
