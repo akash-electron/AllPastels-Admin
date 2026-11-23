@@ -37,7 +37,9 @@ export async function POST(request: NextRequest) {
     return jsonError("Email and password are required", 400);
   }
 
-  const response = await backendFetch("/api/auth/login", {
+  // Admin-only endpoint: issues a 12h token with the admin audience, which the
+  // backend's requireAdmin insists on (a storefront token is refused).
+  const response = await backendFetch("/api/auth/admin/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

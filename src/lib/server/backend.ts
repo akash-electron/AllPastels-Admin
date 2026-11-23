@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import type { NextResponse as NextResponseType } from "next/server";
+import { applyProxyHeaders } from "./proxyHeaders";
 
 export const API_BASE_URL =
   process.env.API_BASE_URL || "http://localhost:5000";
@@ -80,7 +81,9 @@ export async function backendFetch(
   path: string,
   init: RequestInit = {},
 ): Promise<Response> {
-  return fetch(`${API_BASE_URL}${path}`, { cache: "no-store", ...init });
+  const headers = new Headers(init.headers);
+  await applyProxyHeaders(headers);
+  return fetch(`${API_BASE_URL}${path}`, { cache: "no-store", ...init, headers });
 }
 
 export async function passthrough(response: Response): Promise<NextResponseType> {

@@ -244,7 +244,7 @@ export function ProductDialog({
     if (oversize.length > 0) {
       return `${oversize
         .map((file) => file.name)
-        .join(", ")} — each image must be 10 MB or smaller.`;
+        .join(", ")} — each image must be 5 MB or smaller.`;
     }
     const unsupported = files.filter(
       (file) => !ALLOWED_MIME_TYPES.includes(file.type),

@@ -2,7 +2,7 @@ export const CATEGORY_SUGGESTIONS = ["Women", "Men", "Kids"];
 
 /** Product images cap — the first image is the storefront cover. */
 export const IMAGE_MAX = 6;
-export const MAX_FILE_BYTES = 10 * 1024 * 1024;
+export const MAX_FILE_BYTES = 5 * 1024 * 1024; // matches backend routes/uploads.ts
 export const ALLOWED_MIME_TYPES = [
   "image/jpeg",
   "image/png",
