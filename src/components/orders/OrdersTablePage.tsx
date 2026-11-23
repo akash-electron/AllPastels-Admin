@@ -273,6 +273,14 @@ export function OrdersTablePage() {
                         {paymentMethodLabel(order.paymentMethod)}
                       </span>
                       <Badge status={paymentStatusLabel(order.paymentStatus)} />
+                      {order.paymentMethod === "online" &&
+                      order.paymentProvider ? (
+                        <span className="mt-1 block text-xs text-ash-300">
+                          {order.paymentProvider === "razorpay"
+                            ? "Razorpay"
+                            : "Stripe"}
+                        </span>
+                      ) : null}
                     </Td>
                     <Td>
                       <Badge status={toBadge(order.status)} />

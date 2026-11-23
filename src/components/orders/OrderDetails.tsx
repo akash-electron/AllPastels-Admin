@@ -253,7 +253,12 @@ export function OrderDetails({ id }: { id: string }) {
               </p>
               {order.customerPhone || order.shippingAddress?.phone ? (
                 <p className="text-ash-200">
-                  {order.customerPhone || order.shippingAddress?.phone}
+                  <a
+                    href={`tel:${order.customerPhone || order.shippingAddress?.phone}`}
+                    className="hover:text-burnt-400"
+                  >
+                    {order.customerPhone || order.shippingAddress?.phone}
+                  </a>
                 </p>
               ) : null}
               <p className="mt-2 text-xs text-ash-300">
@@ -328,6 +333,22 @@ export function OrderDetails({ id }: { id: string }) {
           <Card>
             <CardHeader title="Payment" />
             <div className="flex flex-col gap-2 px-5 py-4 text-sm">
+              {order.paymentStatus === "paid" && order.status === "cancelled" ? (
+                <p className="flex items-start gap-2 rounded-sm bg-powder-800 px-3 py-2.5 text-xs text-powder-200">
+                  <AlertIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                  Paid after cancellation — refund this payment in the provider
+                  dashboard.
+                </p>
+              ) : null}
+              {order.paymentMethod === "online" &&
+              order.paymentStatus === "failed" &&
+              order.status === "placed" ? (
+                <p className="flex items-start gap-2 rounded-sm bg-powder-800 px-3 py-2.5 text-xs text-powder-200">
+                  <AlertIcon className="mt-0.5 h-4 w-4 shrink-0" />
+                  Customer&apos;s payment failed. They can retry from their order page,
+                  or you can cancel the order.
+                </p>
+              ) : null}
               <div className="flex items-center justify-between gap-3">
                 <span className="text-ash-200">Method</span>
                 <span>{paymentMethodLabel(order.paymentMethod)}</span>
@@ -336,6 +357,30 @@ export function OrderDetails({ id }: { id: string }) {
                 <span className="text-ash-200">Status</span>
                 <Badge status={paymentStatusLabel(order.paymentStatus)} />
               </div>
+              <div className="flex items-center justify-between gap-3">
+                <span className="text-ash-200">Provider</span>
+                <span>
+                  {order.paymentProvider === "razorpay"
+                    ? "Razorpay"
+                    : order.paymentProvider === "stripe"
+                      ? "Stripe"
+                      : "—"}
+                </span>
+              </div>
+              {order.providerPaymentId ? (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-ash-200">Payment ID</span>
+                  <span className="truncate font-mono text-xs">
+                    {order.providerPaymentId}
+                  </span>
+                </div>
+              ) : null}
+              {order.providerOrderId ? (
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-ash-200">Provider order</span>
+                  <span className="truncate text-xs">{order.providerOrderId}</span>
+                </div>
+              ) : null}
               {order.paymentReference ? (
                 <div className="flex items-center justify-between gap-3">
                   <span className="text-ash-200">Reference</span>
@@ -344,8 +389,34 @@ export function OrderDetails({ id }: { id: string }) {
               ) : null}
               {order.paidAt ? (
                 <div className="flex items-center justify-between gap-3">
-                  <span className="text-ash-200">Paid on</span>
+                  <span className="text-ash-200">Paid at</span>
                   <span>{formatDateTime(order.paidAt)}</span>
+                </div>
+              ) : null}
+              {order.paymentProvider === "razorpay" &&
+              order.providerPaymentId ? (
+                <div className="flex items-center justify-end">
+                  <a
+                    href={`https://dashboard.razorpay.com/app/payments/${encodeURIComponent(order.providerPaymentId)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-burnt-400 hover:text-burnt-300"
+                  >
+                    Open in Razorpay
+                  </a>
+                </div>
+              ) : null}
+              {order.paymentProvider === "stripe" &&
+              order.providerPaymentId?.startsWith("pi_") ? (
+                <div className="flex items-center justify-end">
+                  <a
+                    href={`https://dashboard.stripe.com/payments/${encodeURIComponent(order.providerPaymentId)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-burnt-400 hover:text-burnt-300"
+                  >
+                    Open in Stripe
+                  </a>
                 </div>
               ) : null}
             </div>

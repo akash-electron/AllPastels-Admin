@@ -78,7 +78,7 @@ export interface AdminOrder {
   user: string | null;
   customerName?: string;
   customerEmail?: string;
-  customerPhone?: string;
+  customerPhone?: string | null;
   shippingAddress: AdminOrderAddress | null;
   // The current backend stores only a shipping address. Render a billing
   // address when a future/legacy order payload includes one.
@@ -95,8 +95,13 @@ export interface AdminOrder {
   taxRatePercent: number | null;
   paymentMethod: AdminPaymentMethod;
   paymentStatus: AdminPaymentStatus;
-  paymentReference?: string;
+  paymentReference?: string | null;
   paidAt?: string | null;
+  paymentProvider?: "razorpay" | "stripe" | null;
+  providerOrderId?: string | null;
+  providerPaymentId?: string | null;
+  amountMinor?: number | null;
+  currency?: "INR" | null;
   status: AdminOrderStatus;
   stockRestored: boolean;
   statusHistory: AdminOrderStatusEntry[];
