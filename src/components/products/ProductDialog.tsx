@@ -25,6 +25,7 @@ import { uploadImages, type UploadProgress } from "@/lib/services/uploads.servic
 import type { Product, ProductInput } from "@/lib/types/product";
 
 interface FormValues {
+  sku: string;
   name: string;
   category: string;
   price: string;
@@ -41,6 +42,7 @@ interface FormValues {
 
 function toFormValues(product?: Product | null): FormValues {
   return {
+    sku: product?.sku ?? "",
     name: product?.name ?? "",
     category: product?.category ?? "",
     price: product ? String(product.price) : "",
@@ -81,6 +83,14 @@ function validate(values: FormValues): Record<string, string> {
     errors.name = "Name is required";
   } else if (values.name.trim().length > 200) {
     errors.name = "Name must be at most 200 characters";
+  }
+
+  const sku = values.sku.trim();
+  if (sku.length > 40) {
+    errors.sku = "SKU must be at most 40 characters";
+  } else if (sku.length > 0 && !/^[A-Z0-9][A-Z0-9_-]*$/i.test(sku)) {
+    errors.sku =
+      "SKU must start with a letter or number and use only letters, numbers, hyphens and underscores";
   }
 
   if (values.category.trim().length === 0) {
@@ -313,6 +323,7 @@ export function ProductDialog({
     try {
       await onSubmit(
         {
+          sku: values.sku.trim().toUpperCase() || undefined,
           name: values.name.trim(),
           description: values.description,
           price: Number(values.price.trim()),
@@ -368,6 +379,27 @@ export function ProductDialog({
               value={values.name}
               onChange={(e) => set("name", e.target.value)}
               autoFocus
+            />
+          </FormField>
+          <FormField
+            label="SKU"
+            error={errors.sku}
+            htmlFor="product-sku"
+            hint={
+              product
+                ? "Leave blank to keep the current SKU. Letters, numbers, hyphens and underscores."
+                : "Optional — a stable SKU is generated automatically when left blank."
+            }
+          >
+            <input
+              id="product-sku"
+              className={`ap-input font-mono uppercase ${errors.sku ? "border-powder-400" : ""}`}
+              maxLength={40}
+              spellCheck={false}
+              autoCapitalize="characters"
+              value={values.sku}
+              onChange={(e) => set("sku", e.target.value.toUpperCase())}
+              placeholder="AP-XXXXXXXX"
             />
           </FormField>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

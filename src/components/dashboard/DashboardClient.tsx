@@ -15,12 +15,16 @@ import {
   toRecentOrderRow,
 } from "@/lib/utils/dashboard";
 import { getErrorMessage } from "@/lib/utils/error";
+import { DEFAULT_LOW_STOCK_THRESHOLD } from "@/lib/utils/inventory";
 import type { AdminOrder } from "@/lib/types/order";
 import type { Product } from "@/lib/types/product";
 
 export function DashboardClient() {
   const [orders, setOrders] = useState<AdminOrder[] | null>(null);
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [lowStockThreshold, setLowStockThreshold] = useState(
+    DEFAULT_LOW_STOCK_THRESHOLD,
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -29,6 +33,7 @@ export function DashboardClient() {
       const data = await getDashboardData();
       setOrders(data.orders);
       setProducts(data.products);
+      setLowStockThreshold(data.lowStockThreshold);
       setLoadError(null);
     } catch (err) {
       setLoadError(getErrorMessage(err, "Failed to load dashboard data"));
@@ -89,7 +94,9 @@ export function DashboardClient() {
   const categories =
     orders !== null && products !== null ? buildCategoryShares(orders) : [];
   const stats =
-    orders !== null && products !== null ? buildStats(orders, products) : [];
+    orders !== null && products !== null
+      ? buildStats(orders, products, lowStockThreshold)
+      : [];
   const recent =
     orders !== null && products !== null
       ? orders.slice(0, RECENT_ORDER_COUNT).map(toRecentOrderRow)

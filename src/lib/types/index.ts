@@ -9,6 +9,30 @@ export type {
   DiscountType,
 } from "./coupon";
 export type {
+  AdjustStockInput,
+  AdjustStockResult,
+  InventoryData,
+  InventoryPagination,
+  InventoryProduct,
+  InventoryQuery,
+  InventorySettings,
+  InventorySortField,
+  InventorySummary,
+  SortOrder,
+  StockAdjustMode,
+  StockMovement,
+  StockMovementActor,
+  StockMovementPage,
+  StockMovementProduct,
+  StockMovementQuery,
+  StockMovementType,
+  StockStatus,
+} from "./inventory";
+export type {
+  AdminReview,
+  AdminReviewProduct,
+} from "./review";
+export type {
   AdminOrder,
   AdminOrderAddress,
   AdminOrderCoupon,

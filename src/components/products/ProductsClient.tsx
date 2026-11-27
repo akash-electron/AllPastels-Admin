@@ -29,18 +29,23 @@ import {
   listProducts,
   updateProduct,
 } from "@/lib/services/products.service";
+import { getInventorySettings } from "@/lib/services/inventory.service";
+import {
+  DEFAULT_LOW_STOCK_THRESHOLD,
+  getProductSku,
+  getStockStatus,
+  stockRowClass,
+  stockStatusLabel,
+} from "@/lib/utils/inventory";
 import type { Product, ProductInput } from "@/lib/types/product";
 
 type Notice = { tone: "success" | "error"; message: string };
 
-function stockBadge(stock: number): string {
-  if (stock === 0) return "Out of stock";
-  if (stock < 10) return "Low stock";
-  return "In stock";
-}
-
 export function ProductsClient() {
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [lowStockThreshold, setLowStockThreshold] = useState(
+    DEFAULT_LOW_STOCK_THRESHOLD,
+  );
   const [loadError, setLoadError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [notice, setNotice] = useState<Notice | null>(null);
@@ -55,8 +60,12 @@ export function ProductsClient() {
 
   const load = useCallback(async () => {
     try {
-      const data = await listProducts();
+      const [data, settings] = await Promise.all([
+        listProducts(),
+        getInventorySettings(),
+      ]);
       setProducts(data);
+      setLowStockThreshold(settings.lowStockThreshold);
       setLoadError(null);
     } catch (err) {
       setLoadError(getErrorMessage(err, "Failed to load products"));
@@ -321,58 +330,72 @@ export function ProductsClient() {
               </tr>
             </thead>
             <tbody aria-busy={loading}>
-              {products?.map((product) => (
-                <tr
-                  key={product._id}
-                  className="transition-colors hover:bg-surface"
-                >
-                  <Td>
-                    <span className="block font-medium">{product.name}</span>
-                    <span className="block max-w-[16rem] truncate text-xs text-ash-200">
-                      {product.description || product.images[0] || "—"}
-                    </span>
-                  </Td>
-                  <Td className="text-ash-200">{product.category}</Td>
-                  <Td className="hidden text-ash-200 md:table-cell">
-                    {product.sizes.length > 0
-                      ? product.sizes.join(", ")
-                      : "—"}
-                  </Td>
-                  <Td className="text-right">{formatINR(product.price)}</Td>
-                  <Td>
-                    <Badge status={stockBadge(product.stock)} />
-                  </Td>
-                  <Td className="hidden whitespace-nowrap text-ash-200 sm:table-cell">
-                    {formatDate(product.updatedAt)}
-                  </Td>
-                  <Td className="text-right">
-                    <span className="inline-flex gap-1">
-                      <button
-                        type="button"
-                        title="Edit"
-                        onClick={() => setDialog(product)}
-                        className="rounded-sm p-2 text-ash-300 hover:bg-floral-400 hover:text-ink"
-                      >
-                        <PencilIcon className="h-4 w-4" />
-                        <span className="sr-only">
-                          Edit {product.name}
+              {products?.map((product) => {
+                const stockStatus = getStockStatus(
+                  product.stock,
+                  lowStockThreshold,
+                );
+                return (
+                  <tr
+                    key={product._id}
+                    className={`transition-colors hover:bg-surface ${stockRowClass(stockStatus)}`}
+                  >
+                    <Td>
+                      <span className="block font-medium">{product.name}</span>
+                      <span className="block font-mono text-xs text-ash-300">
+                        {getProductSku(product)}
+                      </span>
+                      <span className="block max-w-[16rem] truncate text-xs text-ash-200">
+                        {product.description || product.images[0] || "—"}
+                      </span>
+                    </Td>
+                    <Td className="text-ash-200">{product.category}</Td>
+                    <Td className="hidden text-ash-200 md:table-cell">
+                      {product.sizes.length > 0
+                        ? product.sizes.join(", ")
+                        : "—"}
+                    </Td>
+                    <Td className="text-right">{formatINR(product.price)}</Td>
+                    <Td>
+                      <span className="flex flex-wrap items-center gap-2">
+                        <span className="font-medium">
+                          {product.stock.toLocaleString("en-IN")}
                         </span>
-                      </button>
-                      <button
-                        type="button"
-                        title="Delete"
-                        onClick={() => setDeleting(product)}
-                        className="rounded-sm p-2 text-ash-300 hover:bg-cotton-500 hover:text-cotton-100"
-                      >
-                        <TrashIcon className="h-4 w-4" />
-                        <span className="sr-only">
-                          Delete {product.name}
-                        </span>
-                      </button>
-                    </span>
-                  </Td>
-                </tr>
-              ))}
+                        <Badge status={stockStatusLabel(stockStatus)} />
+                      </span>
+                    </Td>
+                    <Td className="hidden whitespace-nowrap text-ash-200 sm:table-cell">
+                      {formatDate(product.updatedAt)}
+                    </Td>
+                    <Td className="text-right">
+                      <span className="inline-flex gap-1">
+                        <button
+                          type="button"
+                          title="Edit"
+                          onClick={() => setDialog(product)}
+                          className="rounded-sm p-2 text-ash-300 hover:bg-floral-400 hover:text-ink"
+                        >
+                          <PencilIcon className="h-4 w-4" />
+                          <span className="sr-only">
+                            Edit {product.name}
+                          </span>
+                        </button>
+                        <button
+                          type="button"
+                          title="Delete"
+                          onClick={() => setDeleting(product)}
+                          className="rounded-sm p-2 text-ash-300 hover:bg-cotton-500 hover:text-cotton-100"
+                        >
+                          <TrashIcon className="h-4 w-4" />
+                          <span className="sr-only">
+                            Delete {product.name}
+                          </span>
+                        </button>
+                      </span>
+                    </Td>
+                  </tr>
+                );
+              })}
             </tbody>
           </Table>
         )}

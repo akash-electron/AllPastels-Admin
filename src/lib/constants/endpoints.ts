@@ -5,9 +5,13 @@ export const ENDPOINTS = {
     me: "/api/auth/me",
   },
   products: "/api/products",
+  inventory: "/api/inventory",
+  inventorySettings: "/api/inventory/settings",
+  inventoryMovements: "/api/inventory/movements",
   orders: "/api/orders",
   contact: "/api/contact",
   coupons: "/api/coupons",
+  reviews: "/api/reviews",
   settings: {
     checkout: "/api/settings/checkout",
   },

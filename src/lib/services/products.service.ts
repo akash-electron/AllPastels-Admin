@@ -17,6 +17,13 @@ export function updateProduct(
   return apiPut<Product>(byId(ENDPOINTS.products, id), input);
 }
 
+export function updateProductStock(
+  id: string,
+  stock: number,
+): Promise<Product> {
+  return apiPut<Product>(byId(ENDPOINTS.products, id), { stock });
+}
+
 export function deleteProduct(id: string): Promise<DeleteResult> {
   return apiDelete<DeleteResult>(byId(ENDPOINTS.products, id));
 }

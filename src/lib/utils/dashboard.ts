@@ -9,10 +9,10 @@ import type {
 } from "@/lib/types/dashboard";
 import type { AdminOrder } from "@/lib/types/order";
 import type { Product } from "@/lib/types/product";
+import { DEFAULT_LOW_STOCK_THRESHOLD } from "@/lib/utils/inventory";
 
 const DAY_MS = 86_400_000;
 const WEEK_MS = 7 * DAY_MS;
-const LOW_STOCK_THRESHOLD = 10;
 const NEW_PRODUCT_WINDOW_DAYS = 30;
 export const RECENT_ORDER_COUNT = 7;
 
@@ -83,6 +83,7 @@ export function buildCategoryShares(orders: AdminOrder[]): CategoryShare[] {
 export function buildStats(
   orders: AdminOrder[],
   products: Product[],
+  lowStockThreshold = DEFAULT_LOW_STOCK_THRESHOLD,
 ): DashboardStat[] {
   const now = Date.now();
   const sold = orders.filter(countsAsRevenue);
@@ -108,7 +109,7 @@ export function buildStats(
   ).length;
 
   const lowStock = products.filter(
-    (product) => product.stock < LOW_STOCK_THRESHOLD,
+    (product) => product.stock < lowStockThreshold,
   ).length;
   const newProducts = products.filter((product) =>
     inRange(

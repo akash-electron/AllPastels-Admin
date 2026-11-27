@@ -1,5 +1,7 @@
 export interface Product {
   _id: string;
+  /** Stable stock-keeping unit. Older records may omit it; the UI derives one. */
+  sku?: string;
   name: string;
   description: string;
   price: number;
@@ -19,6 +21,7 @@ export interface Product {
 }
 
 export interface ProductInput {
+  sku?: string;
   name: string;
   description: string;
   price: number;

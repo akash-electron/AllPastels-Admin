@@ -62,6 +62,25 @@ export function CouponsIcon(props: IconProps) {
   );
 }
 
+export function ReviewsIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M21 12a8 8 0 0 1-8 8H7l-4 3v-6a8 8 0 0 1 8-8h2a8 8 0 0 1 8 3Z" />
+      <path d="m12 7 1.2 2.5 2.8.4-2 2 .5 2.8-2.5-1.3-2.5 1.3.5-2.8-2-2 2.8-.4L12 7Z" />
+    </Icon>
+  );
+}
+
+export function InventoryIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M4 7.5 12 3l8 4.5v9L12 21l-8-4.5v-9Z" />
+      <path d="m4 7.5 8 4.5 8-4.5M12 12v9" />
+      <path d="M8 5.25 16 9.8" />
+    </Icon>
+  );
+}
+
 export function SettingsIcon(props: IconProps) {
   return (
     <Icon {...props}>
@@ -209,8 +228,10 @@ export const navIcons: Record<
 > = {
   "/": DashboardIcon,
   "/products": ProductsIcon,
+  "/inventory": InventoryIcon,
   "/orders": OrdersIcon,
   "/messages": EnvelopeIcon,
   "/coupons": CouponsIcon,
+  "/reviews": ReviewsIcon,
   "/settings": SettingsIcon,
 };
